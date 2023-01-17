@@ -20,6 +20,7 @@ class ControllerLibraryUI(QtWidgets.QDialog):
         layout.addWidget(saveWidget)
         self.saveNameField = QtWidgets.QLineEdit()
         saveLayout.addWidget(self.saveNameField)
+        saveBtn = QtWidgets.QPushButton('Save')
         saveBtn.clicked.connect(self.save)
         saveLayout.addWidget(saveBtn)
         size = 64
