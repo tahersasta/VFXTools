@@ -61,7 +61,7 @@ class cityCreator(object):
 		cmds.Group()
 		for i in range(colG):
 			zPos=abs(z_min)+abs(z_max)
-			randGZ = random.randrange(col,col+1,1)
+			randGZ = random.randrange(3,4,1)
 			randSGZ = random.randrange(1,3)
 			zVal = zPos * ((i+1)*randGZ)
 			cmds.duplicate()
@@ -112,34 +112,31 @@ class cityCreator(object):
 			if self.is_group(grp):
 				ch.append(grp)
 		for i in range(nob):
-			try:
-				randNum = random.randrange(2,8)
-				randName = 'Building%d' %(randNum)
-				rCh = random.choice(ch)
-				#|group28|group130|Building2
-				r_selName = rCh+'|'+randName
-				cmds.xform(r_selName, centerPivots = True)
-				bounding_box=cmds.xform(r_selName,q=1,bb=1,ws=1)
-				x_min,y_min,z_min,x_max,y_max,z_max = bounding_box
-				cmds.delete(r_selName)
-				print('deleting %s' %(r_selName))
-				#####################
-				cmds.select('Build1')
-				cmds.duplicate()
-				seln = cmds.ls(sl=1)
-				print(seln)
-				print(cmds.xform(seln, centerPivots = True))
-				Nbounding_box=cmds.xform(seln,q=1,bb=1,ws=1)
-				x_nmin,y_nmin,z_nmin,x_nmax,y_nmax,z_nmax = Nbounding_box
-				cmds.move(y_nmin, [seln[0]+".scalePivot",seln[0]+".rotatePivot"],y=1, absolute=True)
-				cmds.move(y_nmin*-1,seln[0],r=1,y=1)
-				xPos = (x_max + x_min)/2 
-				zPos = (z_max+z_min)/2
-				cmds.move(xPos,zPos,x=1,z=1)
-				randY = random.randrange(f,l)
-				cmds.scale(self.xScale,randY,self.zScale)
-			except ValueError:
-				continue
+			randNum = random.randrange(2,8)
+			randName = 'Building%d' %(randNum)
+			rCh = random.choice(ch)
+			#|group28|group130|Building2
+			r_selName = rCh+'|'+randName
+			cmds.xform(r_selName, centerPivots = True)
+			bounding_box=cmds.xform(r_selName,q=1,bb=1,ws=1)
+			x_min,y_min,z_min,x_max,y_max,z_max = bounding_box
+			cmds.delete(r_selName)
+			print('deleting %s' %(r_selName))
+			#####################
+			cmds.select('Build1')
+			cmds.duplicate()
+			seln = cmds.ls(sl=1)
+			print(seln)
+			print(cmds.xform(seln, centerPivots = True))
+			Nbounding_box=cmds.xform(seln,q=1,bb=1,ws=1)
+			x_nmin,y_nmin,z_nmin,x_nmax,y_nmax,z_nmax = Nbounding_box
+			cmds.move(y_nmin, [seln[0]+".scalePivot",seln[0]+".rotatePivot"],y=1, absolute=True)
+			cmds.move(y_nmin*-1,seln[0],r=1,y=1)
+			xPos = (x_max + x_min)/2 
+			zPos = (z_max+z_min)/2
+			cmds.move(xPos,zPos,x=1,z=1)
+			randY = random.randrange(f,l)
+			cmds.scale(self.xScale,randY,self.zScale)
 
 	def del_empty(self):
 		deleteList=[]
@@ -195,16 +192,17 @@ class city(baseWindow,cityCreator):
 		self.colsG=cmds.textField()
 		cmds.setParent(column)
 		cmds.button(label="Create City", command=self.cityNew)
-		cmds.text("Slider to change the number of buildings to replace in the city")
-		rows = cmds.rowLayout(numberOfColumns=2)
-		self.text= cmds.text(label="10")
-		self.slider=cmds.intSlider(min=1,max=30, value=10, step=1, changeCommand =self.repBuild)
+	
+		rows = cmds.rowLayout(numberOfColumns=3)
+		self.text= cmds.text("Number of Buildings to be replaced")
+		self.slider= cmds.textField()
+		cmds.button(label="Replace Buildings",command=self.repBuild)
 		cmds.setParent(column)
 		cmds.button(label="Close", command=self.closeUI)
 	def repBuild(self,*args):
-		nob = cmds.intSlider(self.slider,q=1,value=True)
-		self.replace_building(nob=nob)
-		cmds.text(self.text,edit=True,label=nob)
+		nob = cmds.textField(self.slider,q=1,text=True)
+		self.replace_building(nob=int(nob))
+
 
 	def cityNew(self,*args):
 		row = cmds.textField(self.rows,q=1,text=True)
