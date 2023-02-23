@@ -40,19 +40,34 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 				collections = layer.getCollections()
 				for collection in collections:
 					self.listView_2.addItem(collection.name())
-
 	def __init__(self):
 		super(mainUI,self).__init__()
 		self.setupUi(self)
 		self.layerDisplay(self)
 		self.pushButton.clicked.connect(self.load)
 		self.listView.itemClicked.connect(self.collectionDisplay)
+		self.pushButton_2.clicked.connect(self.edit)
+
+	def edit(self):
+		if self.listView_2.selectedItems():
+			dialog = editUI()
+			uin = dialog.exec_()
+			return uin
+		else:
+			QtWidgets.QMessageBox(self,"Error","Please select a layer and a collection")
 
 	def load(self):
 		dialog = beautyUI()
 		uin = dialog.exec_()
 		self.layerDisplay(self)
 		return uin 
+
+class editUI(QtWidgets.QDialog,stacked.Ui_Form):		
+	def __init__(self):
+		super(editUI,self).__init__()
+		self.setupUi(self)
+		self.layerNameLine.setText()
+
 
 class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 	def __init__(self):
@@ -177,7 +192,10 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 			obj = obj + " " + i
 		c1.getSelector().setPattern(obj)
 		o = []
+		print(self.form[2][0])
 		child = cmds.listRelatives(self.form[2][0])
+		print(child)
+		return
 		for i in range(len(self.attrList.selectedItems())):
 			o.append(c1.createAbsoluteOverride(child[0],self.form[3][i]))
 			o[i].setAttrValue(True)
@@ -185,7 +203,16 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 			createShader(self.form[4],self.nameShader.text())
 			so = c1.createOverride(self.nameShader.text(),"shaderOverride")
 			so.setShader(self.nameShader.text())
-	
+		if self.check.isChecked():
+			aov_collection = self.r1.aovCollectionInstance()
+			aov_name = cmds.ls(type="aiAOV")
+			for a in range(len(aov_name)):
+				aov = aov_name[a][6:]
+				sub_colle = collection.create(self.r1.name()+'_'+aov, collection.AOVChildCollection.kTypeId, aovName=aov)
+				aov_collection.appendChild(sub_colle)
+				override = sub_colle.createAbsoluteOverride('aiAOV_'+aov, 'enabled')  #(aov name, attr name)
+				override.setAttrValue(0)  # override value
+				override.setName(self.r1.name()+'_'+aov)
 	def createNewCollection(self, *args):
 		dialog = collectionUI()
 		
@@ -229,14 +256,15 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 				self.attrList.item(i).setHidden( False)
 			else:
 				self.attrList.item(i).setHidden(True)
-	
+
 	def attr_List(self, *args):
 		attrs = set()
 		for i in self.listView.selectedItems():
-			relObj = cmds.listRelatives(i.text())
-			attrs.update(cmds.listAttr(relObj))
+			relObj = cmds.listRelatives(i.text(),ad=True)
+			attrs.update(cmds.listAttr(relObj[0]))
 		for x in attrs:
 			self.attrList.addItem(x)
+
 
 
 
