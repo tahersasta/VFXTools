@@ -26,47 +26,258 @@ def createShader(shaderType,nameShader):
 	cmds.connectAttr(shaderName + ".outColor", sgName + ".surfaceShader")
 	return (shaderName, sgName)
 	
-class mainUI(QtWidgets.QDialog,main.Ui_Form):
-	def layerDisplay(self,*args):
-		self.listView.clear()
-		children = rs.getChildren()
-		for layer in children:
-			self.listView.addItem(layer.name())
-	def collectionDisplay(self,*args):
-		self.listView_2.clear()
-		children = rs.getChildren()
-		for layer in children:
-			if layer.name() == self.listView.currentItem().text():
-				collections = layer.getCollections()
-				for collection in collections:
-					self.listView_2.addItem(collection.name())
+class mainUI(QtWidgets.QDialog,main.Ui_Form):	
 	def __init__(self):
 		super(mainUI,self).__init__()
 		self.setupUi(self)
 		self.layerDisplay(self)
 		self.pushButton.clicked.connect(self.load)
 		self.listView.itemClicked.connect(self.collectionDisplay)
+		self.listView_2.itemClicked.connect(self.overrideDisplay)
 		self.pushButton_2.clicked.connect(self.edit)
+		self.pushButton_3.clicked.connect(self.automate)
+		self.listView.itemClicked.connect(self.show_checkBox)
+		self.checkBox.stateChanged.connect(self.setRender)
+		self.pushButton_4.clicked.connect(self.addCollection)
+		self.checkBox_1.stateChanged.connect(self.setVisibleRender)
+		
+		for i in range(self.listView.count()):
+			r1 = rs.getRenderLayer(self.listView.item(i).text())
+			if r1.isRenderable():
+				self.listView.item(i).setBackground(QtGui.QColor('Green'))
+			else:
+				self.listView.item(i).setBackground(QtGui.QColor('Red'))
+	def layerDisplay(self,*args):
+		self.listView.clear()
+		children = rs.getChildren()
+		for layer in children:
+			self.listView.addItem(layer.name())
 
+	def collectionDisplay(self,*args):
+		self.listView_2.clear()
+		children = rs.getRenderLayer(self.listView.currentItem().text())
+		collections = children.getCollections()
+		for collection in collections:
+			self.listView_2.addItem(collection.name())
+	def overrideDisplay(self,*args):
+		self.listView_3.clear()
+		r1 = rs.getRenderLayer(self.listView.currentItem().text())
+		c1 = r1.getCollections()
+		for c in c1:
+			if c.name() == self.listView_2.currentItem().text():
+				c2 = c.getCollections()
+				o1 = []
+				for sub in c2:
+					o1.append(sub.getOverrides())
+				o2 = []
+				for o in o1:
+					for i in o:
+						o2.append(i.name())
+				try :
+					self.listView_3.addItems(o2)
+				except:
+					self.listView_3.clear()
+		
+	def addCollection(self, *args):
+		if self.listView.selectedItems():
+			initvalues=[False]
+			dialog = collectionUI(initvalues)
+			if dialog.exec_():
+				obj  = " "
+				QtWidgets.QMessageBox.warning(self,"Message","Worked")
+				rsult=dialog.createLayerCollection(self)
+				r1 = rs.getRenderLayer(self.listView.currentItem().text())
+				c1 = r1.createCollection(rsult[0])
+				for i in rsult[1]:
+					obj = obj + " "+ i
+				c1.getSelector().setPattern(obj)
+				o1 = []
+				child = cmds.listRelatives(rsult[1][0],ad=True)
+				l = dialog.lenAttr(self)
+				for i in range(l):
+					o1.append(c1.createAbsoluteOverride(child[0],rsult[2][i]))
+					o1[i].setAttrValue(True)
+				s = dialog.shaderSelected(self)
+				if s:
+					createShader(rsult[3],rsult[4])
+					so = c1.createOverride(rsult[4],"shaderOverride")
+					so.setShader(rsult[4])
+				self.collectionDisplay()
+		
+		else:
+			QtWidgets.QMessageBox.warning(self,"Error","Please select a Layer to add the collection")	
+	def keyPressEvent(self, event):
+		if event.key() == QtCore.Qt.Key_Delete:
+			current_item = self.listView.currentItem()
+			current_collection = self.listView_2.currentItem()
+			current_override = self.listView_3.currentItem()
+			r1 = rs.getRenderLayer(current_item.text())
+			if current_item is not None and current_collection is None:
+				self.listView.takeItem(self.listView.row(current_item))
+				renderLayer.delete(r1)
+				self.listView_2.clear()
+			elif current_collection is not None and current_override is None:
+				self.listView_2.takeItem(self.listView_2.row(current_collection))
+				c1 = r1.getCollections()
+				c = [x for x in c1 if x.name() == current_collection.text()]
+				collection.delete(c[0])
+			elif current_override is not None:
+				self.listView_3.takeItem(self.listView_3.row(current_override))
+				o1 = []
+				c1 = r1.getCollections()
+				for c in c1:
+					if c.name() == self.listView_2.currentItem().text():
+						c2 = c.getCollections()
+						for sub in c2:
+							o1=sub.getOverrides()
+							for o in o1:
+								if o.name() == current_override.text():
+									override.delete(o)
+
+	def setRender(self,*args):
+		r1 = rs.getRenderLayer(self.listView.currentItem().text())
+		if not self.checkBox.isChecked():
+			r1.setRenderable(False)
+			r1.setLabelColor('Red')
+			self.listView.currentItem().setBackground(QtGui.QColor('Red'))
+		else:
+			r1.setRenderable(True)
+			r1.setLabelColor('Green')
+			self.listView.currentItem().setBackground(QtGui.QColor('Green'))
+	def setVisibleRender(self, *args):
+		r1 = rs.getRenderLayer(self.listView.currentItem().text())
+		if self.checkBox_1.isChecked():
+			rs.switchToLayer(r1)
+
+
+	def show_checkBox(self,*args):
+		self.checkBox.setHidden(False)
+		self.checkLabel.setHidden(False)
+		self.checkBox_1.setHidden(False)
+		self.checkLabel_1.setHidden(False)
+		
+		r1 = rs.getRenderLayer(self.listView.currentItem().text())
+		if r1.isRenderable():
+			self.checkBox.setChecked(True)
+		else:
+			self.checkBox.setChecked(False)
+		if r1.isVisible():
+			self.checkBox_1.setChecked(True)
+		else:
+			self.checkBox_1.setChecked(False)
+		self.pushButton.setGeometry(QtCore.QRect(56, 424, 151, 41))
+		self.pushButton_2.setGeometry(QtCore.QRect(286, 424, 151, 41))
+		self.pushButton_3.setGeometry(QtCore.QRect(516, 424, 151, 41))
+		self.pushButton_4.setGeometry(QtCore.QRect(286, 474, 151, 41))
 	def edit(self):
 		if self.listView_2.selectedItems():
-			dialog = editUI()
-			uin = dialog.exec_()
-			return uin
+			initvalues=[True,self.listView.currentItem().text(),self.listView_2.currentItem().text()]
+			dialog = collectionUI(initvalues)
+			if dialog.exec_():
+				obj  = " "
+				QtWidgets.QMessageBox.warning(self,"Error","Worked")
+				rsult=dialog.createLayerCollection(self)
+				r1 = rs.getRenderLayer(self.listView.currentItem().text())
+				oldCollection = r1.getCollections()
+				for c in oldCollection:
+					if c.name() == self.listView_2.currentItem().text():
+						collection.delete(c)
+				c1 = r1.createCollection(rsult[0])
+				for i in rsult[1]:
+					obj = obj + " "+ i
+				c1.getSelector().setPattern(obj)
+				o1 = []
+				child = cmds.listRelatives(rsult[1][0],ad=True)
+				l = dialog.lenAttr(self)
+				for i in range(l):
+					o1.append(c1.createAbsoluteOverride(child[0],rsult[2][i]))
+					o1[i].setAttrValue(True)
+				s = dialog.shaderSelected(self)
+				if s:
+					createShader(rsult[3],rsult[4])
+					so = c1.createOverride(rsult[4],"shaderOverride")
+					so.setShader(rsult[4])
+				self.collectionDisplay()
+		
 		else:
-			QtWidgets.QMessageBox(self,"Error","Please select a layer and a collection")
+			QtWidgets.QMessageBox.warning(self,"Error","Please select a collection to be edited")
 
+	def automate(self,*args):
+		aovs = cmds.ls(type="aiAOV")
+		for a in aovs:
+			cmds.setAttr(a+'.enabled',0)
+		r1 = rs.createRenderLayer('Beauty')
+		c1 = r1.createCollection('geo')
+		c1.getSelector().setPattern('geo')
+		c2=r1.createCollection('lgts')
+		c2.getSelector().setPattern('lgt')
+		c3=r1.createCollection('env')
+		c3.getSelector().setPattern('env')
+
+		aov_collection = r1.aovCollectionInstance()
+		aov_name = cmds.ls(type="aiAOV")
+		for a in range(len(aov_name)):
+			aov = aov_name[a][6:]
+			sub_colle = collection.create(r1.name()+'_'+aov, collection.AOVChildCollection.kTypeId, aovName=aov)
+			aov_collection.appendChild(sub_colle)
+			override = sub_colle.createAbsoluteOverride('aiAOV_'+aov, 'enabled')  #(aov name, attr name)
+			override.setAttrValue(1)  # override value
+			override.setName(r1.name()+'_'+aov)
+
+
+		r2 = rs.createRenderLayer('Shadow')
+		c3 = r2.createCollection('geo')
+		c3.getSelector().setPattern('geo')
+		rel = cmds.listRelatives('geo',ad=1)
+		o1 = c3.createAbsoluteOverride(rel[0],'primaryVisibility')
+		o1.setAttrValue(False)
+		c4=r2.createCollection('lgts')
+		c4.getSelector().setPattern('lgt')
+		c5=r2.createCollection('env')
+		c5.getSelector().setPattern('env')
+		createShader('aiShadowMatte','shadow')
+		so = c5.createOverride('shadow',"shaderOverride")
+		so.setShader('shadow')
+
+
+
+		r3 = rs.createRenderLayer('Reflection')
+		c6 = r3.createCollection('geo')
+		c6.getSelector().setPattern('geo')
+		rel = cmds.listRelatives('geo',ad=1)
+		o2 = c6.createAbsoluteOverride(rel[0],'primaryVisibility')
+		o2.setAttrValue(False)
+		c7=r3.createCollection('lgts')
+		c7.getSelector().setPattern('lgt')
+		c8=r3.createCollection('env')
+		c8.getSelector().setPattern('env')
+		createShader('aiStandardSurface','reflect')
+		so1 = c8.createOverride('reflect',"shaderOverride")
+		so1.setShader('reflect')
+		cmds.setAttr('reflect.baseColor',0 , 0 ,0,type = 'double3')
+
+
+		r4 = rs.createRenderLayer('Occlusion')
+		c9 = r4.createCollection('geo')
+		c9.getSelector().setPattern('geo')
+		o3 = c9.createAbsoluteOverride(rel[0], 'primaryVisibility')
+		o3.setAttrValue(False)
+		c10 = r4.createCollection('env')
+		c10.getSelector().setPattern('env')
+		createShader('aiAmbientOcclusion', 'occlusion')
+		so1 = c10.createOverride('occlusion', "shaderOverride")
+		so1.setShader('occlusion')
+
+		r1.setLabelColor('Green')
+		r2.setLabelColor('Green')
+		r3.setLabelColor('Green')
+		r4.setLabelColor('Green')
+		self.layerDisplay(self)
 	def load(self):
 		dialog = beautyUI()
 		uin = dialog.exec_()
 		self.layerDisplay(self)
 		return uin 
-
-class editUI(QtWidgets.QDialog,stacked.Ui_Form):		
-	def __init__(self):
-		super(editUI,self).__init__()
-		self.setupUi(self)
-		self.layerNameLine.setText()
 
 
 class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
@@ -184,7 +395,12 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 		for layer in children:
 			if layer.name() == self.form[0]:
 				return	
+
+		aovs = cmds.ls(type="aiAOV")
+		for a in aovs:
+			cmds.setAttr(a+'.enabled',0)
 		self.r1 = rs.createRenderLayer(self.form[0])
+		self.r1.setLabelColor('Green')
 		rs.switchToLayer(self.r1)
 		c1 = self.r1.createCollection(self.form[1])
 		obj =""
@@ -192,10 +408,8 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 			obj = obj + " " + i
 		c1.getSelector().setPattern(obj)
 		o = []
-		print(self.form[2][0])
-		child = cmds.listRelatives(self.form[2][0])
-		print(child)
-		return
+		child = cmds.listRelatives(self.form[2][0],ad=True)
+
 		for i in range(len(self.attrList.selectedItems())):
 			o.append(c1.createAbsoluteOverride(child[0],self.form[3][i]))
 			o[i].setAttrValue(True)
@@ -211,10 +425,11 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 				sub_colle = collection.create(self.r1.name()+'_'+aov, collection.AOVChildCollection.kTypeId, aovName=aov)
 				aov_collection.appendChild(sub_colle)
 				override = sub_colle.createAbsoluteOverride('aiAOV_'+aov, 'enabled')  #(aov name, attr name)
-				override.setAttrValue(0)  # override value
+				override.setAttrValue(1)  # override value
 				override.setName(self.r1.name()+'_'+aov)
 	def createNewCollection(self, *args):
-		dialog = collectionUI()
+		initvalues = [False]
+		dialog = collectionUI(initvalues)
 		
 		if dialog.exec_():
 			obj  = " "
@@ -225,7 +440,7 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 				obj = obj + " "+ i
 			c1.getSelector().setPattern(obj)
 			o1 = []
-			child = cmds.listRelatives(rsult[1][0])
+			child = cmds.listRelatives(rsult[1][0],ad=True)
 			l = dialog.lenAttr(self)
 			for i in range(l):
 				o1.append(c1.createAbsoluteOverride(child[0],rsult[2][i]))
@@ -269,10 +484,10 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 
 
 class collectionUI(QtWidgets.QDialog,stackedCollection.Ui_Form):
-	def __init__(self):
+	def __init__(self,initvalues):
 		super(collectionUI,self).__init__()
 		self.setupUi(self)
-
+		
 		self.nextpage2.clicked.connect(self.next)
 		self.nextpage3.clicked.connect(self.next)
 		self.nextpage4.clicked.connect(self.next)
@@ -287,12 +502,41 @@ class collectionUI(QtWidgets.QDialog,stackedCollection.Ui_Form):
 		self.search.textChanged.connect(self.Search)
 		self.attrSearch.textChanged.connect(self.searchAttr)
 		self.shaderSearch.textChanged.connect(self.searchShader)
+		self.values = initvalues
 		for s in self.sel:
 			if cmds.objectType(s) == "transform":
 					self.listWidget.addItem(s)
 		allSgs = ['aiStandardSurface','lambert','surfaceShader','Phong','Blinn','aiShadowMatte']
 		for a in allSgs:
 			self.shaderListCollection.addItem(a)
+		if initvalues[0]:
+			r1 = rs.getRenderLayer(initvalues[1])
+			c1 = r1.getCollections()
+			for c in c1:
+				if c.name() == initvalues[2] :
+					self.collectionNameLine.setText(initvalues[2])
+					target_collection = renderSetup.instance().getRenderLayer(initvalues[1]).getCollectionByName(initvalues[2])
+					objects_in_collection = target_collection.getSelector().getPattern()
+					print(objects_in_collection)
+					for i in range(self.listWidget.count()):
+						if objects_in_collection.strip() == self.listWidget.item(i).text():
+							self.listWidget.setCurrentItem(self.listWidget.item(i))
+					c2 = c.getCollections()
+					for sub in c2:
+						if sub.name()[-15:] == '_shadingEngines':
+							o1 = sub.getOverrides()
+							o1Text=[]
+							for o in o1 :
+								o1Text.append(o.name())
+							for i in range(len(o1Text))	:
+								if o1Text[i][-1].isdigit():
+									o1Text[i] = o1Text[i][:-1]
+								theNode = cmds.nodeType(o1Text[0])
+								for i in range(self.shaderListCollection.count()):
+									if theNode == self.shaderListCollection.item(i).text():
+										self.shaderListCollection.setCurrentItem(self.shaderListCollection.item(i))
+
+		
 	def lenAttr(self,*args):
 		return len(self.attrListCollection.selectedItems())
 	def shaderSelected(self,*args):
@@ -382,10 +626,33 @@ class collectionUI(QtWidgets.QDialog,stackedCollection.Ui_Form):
 	def attr_List(self, *args):
 		attrs = set()
 		for i in self.listWidget.selectedItems():
-			relObj = cmds.listRelatives(i.text())
-			attrs.update(cmds.listAttr(relObj))
+			relObj = cmds.listRelatives(i.text(),ad=1)
+			attrs.update(cmds.listAttr(relObj[0]))
 		for x in attrs:
 			self.attrListCollection.addItem(x)
+		if self.values[0]:
+			r1 = rs.getRenderLayer(self.values[1])
+			c1 = r1.getCollections()
+			for c in c1:
+				if c.name() == self.values[2] :
+					c2 = c.getCollections()
+					for sub in c2:
+						if sub.name()[-7:] == '_shapes':
+							o1 = sub.getOverrides()
+							o1Text=[]
+							for o in o1 :
+								o1Text.append(o.name())
+							for i in range(len(o1Text))	:
+								if o1Text[i][-1].isdigit():
+									o1Text[i] = o1Text[i][:-1]
+
+							print (o1Text)
+							for i in range(self.attrListCollection.count()):
+								item = self.attrListCollection.item(i)
+								if item.text() in o1Text:
+									print(item.text())
+									item.setSelected(True)
+
 def showUI():
 	ui = mainUI()
 	ui.show()
