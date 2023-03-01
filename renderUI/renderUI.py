@@ -43,7 +43,7 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 		#connecting the checkboxes to make a layer visible or renderable
 		self.checkBox.stateChanged.connect(self.setRender)
 		self.checkBox_1.stateChanged.connect(self.setVisibleRender)
-		
+		#Depending upon whether a layer is renderable a label color is defined to the list widget items
 		for i in range(self.listView.count()):
 			r1 = rs.getRenderLayer(self.listView.item(i).text())
 			if r1.isRenderable():
@@ -51,27 +51,36 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 			else:
 				self.listView.item(i).setBackground(QtGui.QColor('Red'))
 	def layerDisplay(self,*args):
+		""" Populates the list widgets with the list of exisiting Render Layers"""
+		#Clears the list so there are no duplicates 
 		self.listView.clear()
 		children = rs.getChildren()
 		for layer in children:
 			self.listView.addItem(layer.name())
 
 	def collectionDisplay(self,*args):
+		""" Populates the list widgets with the list\of exisiting Collection of the Render Layer"""
+		#Clears the list so there are no duplicates 
 		self.listView_2.clear()
 		children = rs.getRenderLayer(self.listView.currentItem().text())
 		collections = children.getCollections()
 		for collection in collections:
 			self.listView_2.addItem(collection.name())
 	def overrideDisplay(self,*args):
+		""" Populates the list widgets with the list of exisiting Overrides of the collection in the Render Layer"""
+		#Clears the list so there are no duplicates 
 		self.listView_3.clear()
 		r1 = rs.getRenderLayer(self.listView.currentItem().text())
 		c1 = r1.getCollections()
+		# since a collection can have multiple sub collections it loops throug all of them to check if they have overrides 
 		for c in c1:
 			if c.name() == self.listView_2.currentItem().text():
+				# since a collection can have multiple sub collections it loops throug all of them to check if they have overrides 
 				c2 = c.getCollections()
 				o1 = []
 				for sub in c2:
 					o1.append(sub.getOverrides())
+				# the list of overrides that we have gotten is has multuiple list inside of it so we nest loop through to get all of its names to add to the list
 				o2 = []
 				for o in o1:
 					for i in o:
@@ -82,24 +91,38 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 					self.listView_3.clear()
 		
 	def addCollection(self, *args):
+		
+		""" Adds a new collection to the eisting Render Layer """
+		
+		#First we check if any Render layer is selected 
 		if self.listView.selectedItems():
+			#We assign a list here with value False to tell the class collectionUI that it has to create a new collection and not edit an existing one 
 			initvalues=[False]
+			# We call the CollectionUI class 
 			dialog = collectionUI(initvalues)
 			if dialog.exec_():
+				#if the collection is created succesfully we send a message box that it worked 
 				obj  = " "
 				QtWidgets.QMessageBox.warning(self,"Message","Worked")
+				#The list that was returned from the collectionUI of the user inputs is assigned here
 				rsult=dialog.createLayerCollection(self)
+				# We get the render Layer 
 				r1 = rs.getRenderLayer(self.listView.currentItem().text())
+				#Create the collection
 				c1 = r1.createCollection(rsult[0])
+				#We give the collection its selectors 
 				for i in rsult[1]:
 					obj = obj + " "+ i
 				c1.getSelector().setPattern(obj)
+				#Create the overrides 
 				o1 = []
+				#since we have selected either a group or a transform we get its attribute name to assign the overrides to
 				child = cmds.listRelatives(rsult[1][0],ad=True)
 				l = dialog.lenAttr(self)
 				for i in range(l):
 					o1.append(c1.createAbsoluteOverride(child[0],rsult[2][i]))
 					o1[i].setAttrValue(True)
+				#Create the shader overrides 
 				s = dialog.shaderSelected(self)
 				if s:
 					createShader(rsult[3],rsult[4])
@@ -108,8 +131,12 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 				self.collectionDisplay()
 		
 		else:
+			#If no item in the list widgt is selected an error message pops up 
 			QtWidgets.QMessageBox.warning(self,"Error","Please select a Layer to add the collection")	
 	def keyPressEvent(self, event):
+		
+		"""The function delete the list item and its associated Layer Collection or Ovveride based on whats selected """
+		
 		if event.key() == QtCore.Qt.Key_Delete:
 			current_item = self.listView.currentItem()
 			current_collection = self.listView_2.currentItem()
