@@ -31,14 +31,17 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 		super(mainUI,self).__init__()
 		self.setupUi(self)
 		self.layerDisplay(self)
+		#connecting the button to open the create,edit or automate layer/collection creation 
 		self.pushButton.clicked.connect(self.load)
-		self.listView.itemClicked.connect(self.collectionDisplay)
-		self.listView_2.itemClicked.connect(self.overrideDisplay)
 		self.pushButton_2.clicked.connect(self.edit)
 		self.pushButton_3.clicked.connect(self.automate)
-		self.listView.itemClicked.connect(self.show_checkBox)
-		self.checkBox.stateChanged.connect(self.setRender)
 		self.pushButton_4.clicked.connect(self.addCollection)
+		#connecting the items in the list to update details of the specific layer and collection 
+		self.listView.itemClicked.connect(self.collectionDisplay)
+		self.listView_2.itemClicked.connect(self.overrideDisplay)
+		self.listView.itemClicked.connect(self.show_checkBox)
+		#connecting the checkboxes to make a layer visible or renderable
+		self.checkBox.stateChanged.connect(self.setRender)
 		self.checkBox_1.stateChanged.connect(self.setVisibleRender)
 		
 		for i in range(self.listView.count()):
