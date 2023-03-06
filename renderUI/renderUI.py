@@ -503,7 +503,6 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 
 		for i in range(len(self.attrList.selectedItems())):
 			o.append(c1.createAbsoluteOverride(child[0],self.form[3][i]))
-			o[i].setAttrValue(True)
 		if self.shaderList.selectedItems():
 			createShader(self.form[4],self.nameShader.text())
 			so = c1.createOverride(self.nameShader.text(),"shaderOverride")
@@ -535,7 +534,6 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 			l = dialog.lenAttr(self)
 			for i in range(l):
 				o1.append(c1.createAbsoluteOverride(child[0],rsult[2][i]))
-				o1[i].setAttrValue(True)
 			s = dialog.shaderSelected(self)
 			if s:
 				createShader(rsult[3],rsult[4])
