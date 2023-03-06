@@ -61,6 +61,9 @@ class Ui_Form(object):
         self.pushButton_4 = QtWidgets.QPushButton(Form)
         self.pushButton_4.setGeometry(QtCore.QRect(286, 454, 151, 41))
         self.pushButton_4.setObjectName("pushButton_4")
+        self.pushButton_5 = QtWidgets.QPushButton(Form)
+        self.pushButton_5.setGeometry(QtCore.QRect(56, 454, 151, 41))
+        self.pushButton_5.setObjectName("pushButton_4")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -78,3 +81,4 @@ class Ui_Form(object):
         self.label_4.setText(_translate("Form", "List of Overrides on the collection "))
         self.pushButton_3.setText(_translate("Form", "Automate"))
         self.pushButton_4.setText(_translate("Form", "Add a Collection"))
+        self.pushButton_5.setText(_translate("Form","Set Show Specific"))
