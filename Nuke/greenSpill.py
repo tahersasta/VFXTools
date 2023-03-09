@@ -10,7 +10,7 @@ and if it exceeds above the threshold it supresses the spill and batch renders t
 img1 = cv2.imread('C:/Users/graphic/Desktop/test/control_00000.jpg')
 img2 = cv2.imread('C:/Users/graphic/Desktop/test/test_00001.jpg')
 
-
+#get the absolute difference of the green channel between the two images 
 green_diff = np.abs(img1[:,:,1] - img2[:,:,1])
 
 # Threshold the difference to identify areas of significant green spill
