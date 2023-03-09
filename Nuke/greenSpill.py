@@ -6,6 +6,10 @@ but in certain cases some shots might have some extra green spill than the other
 and if it exceeds above the threshold it supresses the spill and batch renders the shots'''
 
 
+# Load the images
+img1 = cv2.imread('C:/Users/graphic/Desktop/test/control_00000.jpg')
+img2 = cv2.imread('C:/Users/graphic/Desktop/test/test_00001.jpg')
+
 
 green_diff = np.abs(img1[:,:,1] - img2[:,:,1])
 
