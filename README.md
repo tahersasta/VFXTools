@@ -27,12 +27,12 @@ Here is a list of the projects currently included in the repository:
           <ui> Renames objects in the outliner based on its type </ul>
   </ul>
   <li>Nuke</li>
-    <ul>
+   <ul>
       <li>Channel Seperator</li>
         <ul>Seperate AOV Channels to seperate shuffle nodes </ul>
       <li>Batch renderer</li>
         <ul> Automates keying and rendering of 48 similar shots</ul>
-    </ul>
+  </ul>
   <li>Houdini</li>
   <ul>
     <li>Multiple Export</li>
