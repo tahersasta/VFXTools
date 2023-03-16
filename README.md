@@ -29,7 +29,7 @@ Here is a list of the projects currently included in the repository:
       <li>Channel Seperator</li>
         <ul>Seperate AOV Channels to seperate shuffle nodes </ul>
       <li>Batch renderer</li>
-        <ul>Checks the green spill between varying shots and automates keying and rendering</ul>
+        <ul> Automates keying and rendering of 48 similar shots</ul>
     </ul>
   <li>Houdini</li>
   <ul>
