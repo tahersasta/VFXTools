@@ -24,7 +24,7 @@ Here is a list of the projects currently included in the repository:
     <li>Gear Creator</li>
       <ul>A simple slider that creates a gear and adjusts the number of teeth</ul>
     <li>Object Renamer</li>
-      <ui> Renames objects in the outliner based on its type </ul>
+          <ui> Renames objects in the outliner based on its type </ul>
   </ul>
   <li>Nuke</li>
     <ul>
