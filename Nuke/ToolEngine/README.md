@@ -3,11 +3,11 @@ The Following is a repository to create a menu in nuke to load toolsets. The sou
 
 <ul>
   <li><b>toolengine.py</b></li>
-    Handles the functions of the GUI related elements of the plugin 
+        Handles the functions of the GUI related elements of the plugin 
   <li><b>toolhelper.py</b></li>
-    Handles the backend functionality of the plugin 
+        Handles the backend functionality of the plugin 
   <li><b>config.py</b></li>
-    Contains the path to the json file the name of the temp folder and a list of folders to exclude 
+        Contains the path to the json file the name of the temp folder and a list of folders to exclude 
  </ul>
  
  
