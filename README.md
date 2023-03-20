@@ -11,31 +11,33 @@ The repository contains code for several projects.
 
 Here is a list of the projects currently included in the repository:
 <ul>
-  <li>Maya</li>
+  <li><h4>Maya</h4></li>
   <ul>
-    <li>Render Wizard: </li>
+    <li><b>Render Wizard:</b> </li>
       <ul>A wizard that helps you create render layers, add/edit collections and set/view specific render settings in  one click</ul>
-    <li>Controller Library</li>
+    <li><b>Controller Library:</b></li>
       <ul>Controller Library can quickly store and recall polygons and curves when needed using QtPy.</ul>
-    <li>City Creator</li>
+    <li><b>City Creator</b></li>
       <ul>Generate a city from a single cube or mesh</ul>
-    <li>Animation Tweener</li>
+    <li><b>Animation Tweener</b></li>
       <ul>A simple slider that adds/modifies tween animations </ul>
-    <li>Gear Creator</li>
+    <li><b>Gear Creator</b></li>
       <ul>A simple slider that creates a gear and adjusts the number of teeth</ul>
-    <li>Object Renamer</li>
-          <ui> Renames objects in the outliner based on its type </ul>
+    <li><b>Object Renamer</b></li>
+          <ul> Renames objects in the outliner based on its type </ul>
   </ul>
-  <li>Nuke</li>
+  <li><h4>Nuke</h4></li>
    <ul>
-      <li>Channel Seperator</li>
+      <li><b>Tool Engine</b></li>
+        <ul>Creates a plugin in Nuke to quickly add toolsets across various platforms and over the network</ul>
+      <li><b>Channel Seperator</b></li>
         <ul>Seperate AOV Channels to seperate shuffle nodes </ul>
-      <li>Batch renderer</li>
+      <li><b>Batch renderer</b></li>
         <ul> Automates keying and rendering of 48 similar shots</ul>
   </ul>
-  <li>Houdini</li>
+  <li><h4>Houdini</h4></li>
   <ul>
-    <li>Multiple Export</li>
+    <li><b>Multiple Export</b></li>
     <ul> Exports Fbx of multiple geos </ul>
   </ul>
 </ul>
