@@ -1,3 +1,9 @@
+##################################################################################################################################################
+#
+#Maya dockable window with layouts for tweener and gear creator 
+#
+###############################################################################################################################################
+
 from maya import cmds
 
 from gearCreatorClass import Gear
@@ -7,6 +13,9 @@ class baseWindow(object):
     windowName = "BaseWindow"
 
     def show(self):
+        """
+            Shows the window when the function is run and checks if a window exists
+        """
         if cmds.window(self.windowName, query=True, exists=True):
             cmds.deleteUI(self.windowName)
         cmds.window(self.windowName)
@@ -29,6 +38,10 @@ class tweenerUI(baseWindow):
     windowName = "TweenerUI"
 
     def buildUI(self):
+        """
+            Creates the layout for the animation tweener and assigns functions to sliders and buttons
+            ;Returns : None
+        """
         column = cmds.columnLayout()
         cmds.text(label="Use this slider to set the tween amount")
 
@@ -43,6 +56,10 @@ class tweenerUI(baseWindow):
         cmds.button(label="Close", command=self.closeUI)
 
     def reset(self, *args):
+        """
+            Resets the value of the slider
+            ;return None
+        """
         cmds.floatSlider(self.slider, edit=True, value=50)
 
 
@@ -51,6 +68,10 @@ class gearUI(baseWindow):
     gear = None
 
     def buildUI(self):
+        """
+            Creates the layout for the gear creator and assigns functions to sliders and buttons
+            ;Returns : None
+        """
         column = cmds.columnLayout()
 
         cmds.text("Use this slider to modify a gear")
@@ -76,6 +97,10 @@ class gearUI(baseWindow):
         cmds.text(self.side_label,edit=True,label=teeth)
 
     def gearC(self, *args):
+            """
+                take the slider values to create a gear
+                ;return:None
+            """
         teeth = cmds.intSlider(self.slider, query=True, value=True)
 
         self.gear = Gear()
@@ -83,6 +108,10 @@ class gearUI(baseWindow):
         self.gear.createGear(teeth=teeth)
 
     def reset(self, *args):
+         """
+            Resets the value of the slider
+            ;return None
+        """
         self.gear = None
         self.slider=cmds.intSlider(self.slider,edit=True,value=10)
         cmds.text(self.side_label,edit=True,label="10")
