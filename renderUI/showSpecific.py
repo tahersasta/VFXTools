@@ -1,4 +1,8 @@
-
+#########################################################################################################################################
+#
+#
+#
+#########################################################################################################################################
 
 
 from PySide2 import QtCore, QtGui, QtWidgets
@@ -6,6 +10,9 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_ProjectList(object):
     def setupUi(self, ProjectList):
+        """
+            Sets all the items that are going to be added to the widget
+        """
         ProjectList.setObjectName("ProjectList")
         ProjectList.resize(262, 364)
         self.verticalLayoutWidget = QtWidgets.QWidget(ProjectList)
