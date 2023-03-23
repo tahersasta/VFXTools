@@ -33,7 +33,7 @@ class Gear(object):
 
         self.extrude = cmds.polyExtrudeFacet(localTranslateZ=length)[0]
 
-
+        return  transform,constructor,extrude
     def changeTeeth(self,teeth=10, length=0.3):
          """
         This function will edit the number of teeth
