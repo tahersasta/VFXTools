@@ -1,3 +1,9 @@
+######################################################################################################################################################
+#
+#Adds the Functionality to the UI 
+#
+#########################################################################################################################################################
+
 from maya import cmds
 import os
 import json
@@ -8,7 +14,7 @@ USERAPPDIR = cmds.internalVar(userAppDir=True)
 
 DIRECTORY = os.path.join(USERAPPDIR, 'contLibrary')
 
-print(DIRECTORY)
+
 
 def createDirectory(directory=DIRECTORY):
     """
@@ -21,9 +27,12 @@ def createDirectory(directory=DIRECTORY):
         print("Library Created")
 
 class ControllerLibrary(dict):
-
+        
     def save(self,name,directory=DIRECTORY,screenshot=True, **info):
-
+        """
+            Saves the selected contoller to the device 
+            :param dict: Dictionary with the name and path 
+        """
         createDirectory(directory)
         path=os.path.join(directory,'%s.ma' %name)
         infoFile = os.path.join(directory,'%s.json' %name )
@@ -45,6 +54,11 @@ class ControllerLibrary(dict):
         self[name]=info
 
     def find(self,directory=DIRECTORY):
+        """
+            To check whether a file exists 
+            ;param directory: The directory of the controller
+            ;return:None
+        """
         self.clear()
 
         if not os.path.exists(directory):
@@ -81,11 +95,21 @@ class ControllerLibrary(dict):
 
 
     def load(self,name):
-
+        """
+            Load the file that is selected by the user 
+            ;param name:name of the controller to be loaded
+            ;return:None
+        """
         path= self[name]['path']
         cmds.file(path,i=True, usingNamespaces=False)
 
     def saveScreenshot(self,name,directory=DIRECTORY):
+        """
+            Saves a screenshot of the controller to be loaded in the UI 
+            ;param name:Name of the controller 
+            ;param directory:Directory of the controller
+            ;return the path of the screenshot
+        """
         path = os.path.join(directory,'%s.jpg' %name)
         cmds.viewFit()
         cmds.setAttr("defaultRenderGlobals.imageFormat",8)
