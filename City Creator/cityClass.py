@@ -1,9 +1,25 @@
+######################################################################################################################################
+#
+#Creates a maya dockable window to create a city from a single mesh 
+#
+#################################################################################################################################
+
+
 from maya import cmds
 import random
 import maya.OpenMaya as om
 
 class cityCreator(object):
 	def cityGen(self,selection=False,row=3,col=3, rowG = 10 , colG =10):
+		"""
+			Creates a city from the single mesh 
+			;param selection: to see a mesh is selected or not
+			;param row: Number of rows in a single city block 
+			;param column: Number of colums in a single city block 
+			;param rowG: Number of rows in the city
+			;param colG: Number of columns in the city 
+			;return:None
+		"""
 		if selection: 
 			raise RuntimeError("You diont have anything selected! How dare you?!")
 		#get the Translate X Y and Z
@@ -99,6 +115,11 @@ class cityCreator(object):
 		self.del_empty()
 
 	def replace_building(self,nob=10):
+		"""
+			Replace random buildings in the city with a certain mesh 
+			;param nob: Number of buildings to be replaced in the city 
+			;return: None 
+		"""
 		if cmds.ls(sl=1):
 			sel = cmds.ls(sl=1)
 			cmds.delete(sel,constructionHistory = True)
@@ -180,6 +201,10 @@ class baseWindow(object):
 class city(baseWindow,cityCreator):
 	windowName = "CityCreator"
 	def buildUI(self):
+		"""
+			Creates the layout of maya window
+			;return: None
+		"""
 		column = cmds.columnLayout()
 		cmds.rowColumnLayout( numberOfColumns=2, columnAttach=(1, 'right', 0), columnWidth=[(1, 180), (2, 100)] )
 		cmds.text("No.of Rows in city block       ") 
@@ -200,11 +225,20 @@ class city(baseWindow,cityCreator):
 		cmds.setParent(column)
 		cmds.button(label="Close", command=self.closeUI)
 	def repBuild(self,*args):
+		"""	
+			Replaces the buildings based on user inputs
+			;return: None
+		"""
 		nob = cmds.textField(self.slider,q=1,text=True)
 		self.replace_building(nob=int(nob))
 
 
 	def cityNew(self,*args):
+		"""
+			Creates a new city based on user inputs
+			;return:None
+			
+		"""
 		row = cmds.textField(self.rows,q=1,text=True)
 		col = cmds.textField(self.cols,q=1,text=True)
 		rowsG = cmds.textField(self.rowG,q=1,text=True)
