@@ -29,7 +29,13 @@ rs = renderSetup.instance()
 
 
 def createShader(shaderType,nameShader):
-	""" Create a shader of the given type"""
+	""" 
+		Create a shader of the given type
+		;param: shaderType:gets the type of the shader to create 
+			nameShader:gets the name to be assigned to the newly created shader 
+		;return shaderName: Name of the shader created 
+			sgName: Name of the out attribute created
+	"""
 	
 	shaderName = cmds.shadingNode(shaderType, asShader=True, n = nameShader )
 	sgName = cmds.sets(renderable=True, noSurfaceShader=True, empty=True, name=(shaderName + "SG"))
