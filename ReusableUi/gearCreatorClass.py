@@ -35,6 +35,12 @@ class Gear(object):
 
 
     def changeTeeth(self,teeth=10, length=0.3):
+         """
+        This function will edit the number of teeth
+        :param teeth: The number of teeth
+        :param length: The length of the teeth
+        :return:None
+        """
         spans = teeth * 2
         cmds.polyPipe(self.constructor, edit=True,
                       subdivisionsAxis=spans)
