@@ -1,8 +1,17 @@
+#############################################################################################################################################
+#
+#The Main Widget that appears when the function is executed
+#
+#############################################################################################################################################
+
 from PySide2 import QtCore, QtGui, QtWidgets
 
 
 class Ui_Form(object):
     def setupUi(self, Form):
+        """
+            Sets all the items that are going to be added to the widget
+        """
         Form.setObjectName("Form")
         Form.resize(745, 530)
         self.label = QtWidgets.QLabel(Form)
