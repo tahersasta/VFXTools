@@ -12,5 +12,7 @@ Each Widget is divided into its own file and all the functionality is in a diffe
 <ul>
   <li><b>main.py:</b> The Main Widget that appears when the function is executed </li>
   <li><b>renderui.py:</b> The Functionality of all the widgets</li>
-  <li><b>stacked.py</b>
+  <li><b>stacked.py:</b> The widget to create render layers </li>
+  <li><b>stackedCollection.py:</b> The widget to add/edit Collections to an existing Render layer
+  <li><b>setshowspeciic.py:<b>The widget to set project specific render settings
   
