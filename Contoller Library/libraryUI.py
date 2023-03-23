@@ -14,6 +14,10 @@ class ControllerLibraryUI(QtWidgets.QDialog):
         self.buildUI()
 
     def buildUI(self):
+        """
+            Creates the Layout of the entire Library
+            ;Return:None
+        """
         layout = QtWidgets.QVBoxLayout(self)
         saveWidget = QtWidgets.QWidget()
         saveLayout = QtWidgets.QHBoxLayout(saveWidget)
@@ -48,7 +52,10 @@ class ControllerLibraryUI(QtWidgets.QDialog):
         self.populate()
 
     def load(self):
-
+        """
+            Loads the selected controller to the scene
+            ;Returns:None
+        """
         currentItem = self.listWidget.currentItem()
 
         if not currentItem:
@@ -58,6 +65,10 @@ class ControllerLibraryUI(QtWidgets.QDialog):
         self.library.load(name)
 
     def save(self):
+        """
+            Saves a newly created controller/asset on the click of a button 
+            ;return : None
+        """
         name = self.saveNameField.text()
         if not name.strip():
             cmds.warning("You must give a name!")
@@ -67,6 +78,10 @@ class ControllerLibraryUI(QtWidgets.QDialog):
         self.saveNameField.setText('')
 
     def populate(self):
+        """
+            Lists the available controllers
+            ;return:None
+        """
         self.listWidget.clear()
         self.library.find()
         for name, info in self.library.items():
@@ -86,6 +101,10 @@ class ControllerLibraryUI(QtWidgets.QDialog):
 
 
 def showUI():
+    """
+        Displays the Ui when the program is executed
+        ;return ui:the object of the class so the widget keeps running
+    """
     ui = ControllerLibraryUI()
     ui.show()
     return ui
