@@ -1,3 +1,11 @@
+#############################################################################################################################################################
+#
+#Render UI- Adds the functionality to the entire UI
+#
+#############################################################################################################################################################
+
+
+
 from Qt import QtWidgets,QtCore,QtGui 
 from PySide2 import QtWidgets,QtCore,QtGui 
 from maya import cmds 
@@ -54,6 +62,10 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 			
 
 	def confirmation(self, *args):
+		"""
+			Prompts a message to the user to check if the outliner is setup a certain way for the automation 
+			;Returns None
+		"""
 		reply = QtWidgets.QMessageBox.question(self,"Confirmation", "For this code to work your scene should be setup a certian way , where your objects have to be inside a group called 'geo' , your environments objects such as projection planes should be inside a group called 'env' and all your lights should be inside a group called 'lgt' . Have you organised yout Scene")
 		if reply == QtWidgets.QMessageBox.Yes:
 			checkList = ['geo', 'env' , 'lgt']
@@ -66,6 +78,10 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 			pass
 
 	def layerDisplay(self,*args):
+		"""
+			Updates the list of Render Layers
+			;Return: None
+		"""
 		self.listView.clear()
 		children = rs.getChildren()
 		for layer in children:
@@ -78,12 +94,22 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 				self.listView.item(i).setBackground(QtGui.QColor('Red'))
 
 	def collectionDisplay(self,*args):
+		"""
+			Updates the list of Collections in a render layer
+			;Return: None
+		"""
+		
 		self.listView_2.clear()
 		children = rs.getRenderLayer(self.listView.currentItem().text())
 		collections = children.getCollections()
 		for collection in collections:
 			self.listView_2.addItem(collection.name())
 	def overrideDisplay(self,*args):
+		"""
+			Updates the list of Overrides of a render layer
+			;Return: None
+		"""
+		
 		self.listView_3.clear()
 		r1 = rs.getRenderLayer(self.listView.currentItem().text())
 		c1 = r1.getCollections()
@@ -103,6 +129,10 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 					self.listView_3.clear()
 		
 	def addCollection(self, *args):
+		"""
+			Creates a new collection based on the inputs from the user 
+			;Return:None
+		"""
 		if self.listView.selectedItems():
 			initvalues=[False]
 			dialog = collectionUI(initvalues)
@@ -131,6 +161,11 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 		else:
 			QtWidgets.QMessageBox.warning(self,"Error","Please select a Layer to add the collection")	
 	def keyPressEvent(self, event):
+		"""
+			Updates the GUI based on press of a key 
+			;param event: takes the key press from the user 
+			;Return None
+		"""
 		if event.key() == QtCore.Qt.Key_Delete:
 			current_item = self.listView.currentItem()
 			current_collection = self.listView_2.currentItem()
@@ -159,6 +194,10 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 									override.delete(o)
 
 	def setRender(self,*args):
+		"""
+			Based on a checkbox sets a layer to Renderable
+			;Return: None
+		"""
 		r1 = rs.getRenderLayer(self.listView.currentItem().text())
 		if not self.checkBox.isChecked():
 			r1.setRenderable(False)
@@ -169,12 +208,20 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 			r1.setLabelColor('Green')
 			self.listView.currentItem().setBackground(QtGui.QColor('Green'))
 	def setVisibleRender(self, *args):
+		"""
+			Based on a checkbox sets a layer to Visible
+			;Return: None
+		"""
 		r1 = rs.getRenderLayer(self.listView.currentItem().text())
 		if self.checkBox_1.isChecked():
 			rs.switchToLayer(r1)
 
 
 	def show_checkBox(self,*args):
+		"""
+			When a list item is clicked it shows certain hidden parameters to the item 
+			;retur: None
+		"""
 		self.checkBox.setHidden(False)
 		self.checkLabel.setHidden(False)
 		self.checkBox_1.setHidden(False)
@@ -195,6 +242,10 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 		self.pushButton_4.setGeometry(QtCore.QRect(286, 474, 151, 41))
 		self.pushButton_5.setGeometry(QtCore.QRect(56, 474, 151, 41))
 	def edit(self):
+		"""
+			Edits the paramters of a collection by taking inputs from the user 
+			;Return: None
+		"""
 		if self.listView_2.selectedItems():
 			initvalues=[True,self.listView.currentItem().text(),self.listView_2.currentItem().text()]
 			dialog = collectionUI(initvalues)
@@ -228,6 +279,10 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 			QtWidgets.QMessageBox.warning(self,"Error","Please select a collection to be edited")
 
 	def automate(self,*args):
+		"""
+			Automates the creation of Render Layers to a starting point to avoid repeated tasks
+			;Return: None
+		"""
 		aovs = cmds.ls(type="aiAOV")
 		for a in aovs:
 			cmds.setAttr(a+'.enabled',0)
@@ -312,11 +367,18 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 		r4.setLabelColor('Green')
 		self.layerDisplay(self)
 	def load(self):
+		"""
+			Opens the Widget to create a new Render Layer
+			;Return None
+		"""
 		dialog = beautyUI()
 		uin = dialog.exec_()
 		self.layerDisplay(self)
-		return uin 
 	def showSpecific(self, *args):
+		"""
+			Based upon the input from the user sets the render settings as per projects requirements
+			;Returns:None
+		"""
 		projDict = {
 		"Stranger Things" : {"width" : 1080,"height":1920},
 		"Black Panther" : {"width" : 1080,"height":2048},
@@ -359,6 +421,11 @@ class projList(QtWidgets.QDialog,showSpecific.Ui_ProjectList):
 		self.projList.addItems(projects)	
 		self.okBtn.clicked.connect(self.load)	
 	def load (self,*args):
+		"""
+			Returns certains paramters for based on user input to set show specific render settings 
+			;Returns: item: the name of the project based on the list selection 
+				  check : the name of the checkbox label 
+		"""
 		if self.projList.currentItem() is not None and (self.lowSample.isChecked() or self.highSample.isChecked()) :
 			self.accept()
 			item = self.projList.currentItem().text()
@@ -400,6 +467,10 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 
 
 	def back(self):
+		"""
+			Connects the back buttons of the widget 
+			;Returns:None
+		"""
 		if self.count == 1:
 			self.count = self.count - 1
 			self.stackedWidget.setCurrentIndex(self.count)
@@ -416,6 +487,10 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 			self.count = self.count - 1
 			self.stackedWidget.setCurrentIndex(self.count)
 	def next(self):
+		"""
+			Error checks the inputs entered by the user and stores them to a list to accessed later 
+			;Return None
+		"""
 		if self.count == 0:
 			if self.layerNameLine.text() == "":
 				QtWidgets.QMessageBox.warning(self,"Error","Please Enter a Layer Name")
@@ -482,6 +557,10 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 						QtWidgets.QDialog.close(self)
 
 	def createLayerCollectionClose(self, *args):
+		"""
+			Create the Render Layer and Collections on the basis of user inputs
+			;Return:None
+		"""
 		children = rs.getChildren()
 		for layer in children:
 			if layer.name() == self.form[0]:
@@ -518,6 +597,10 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 				override.setAttrValue(1)  # override value
 				override.setName(self.r1.name()+'_'+aov)
 	def createNewCollection(self, *args):
+		"""
+			Create the additional Collections on the basis of user inputs
+			;Return:None
+		"""
 		initvalues = [False]
 		dialog = collectionUI(initvalues)
 		
@@ -542,6 +625,11 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 		
 		
 	def searchShader(self,text):
+		"""
+			Search the shader list widget 
+			;param text: text entered in the line edit to search 
+			;return:None
+		"""
 		for i in range(self.shaderList.count()):
 			if text.lower() in self.shaderList.item(i).text().lower():
 				self.shaderList.item(i).setHidden( False)
@@ -549,12 +637,22 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 				self.shaderList.item(i).setHidden(True)
 
 	def Search(self,text):
+		"""
+			Search the objects list widget 
+			;param text: text entered in the line edit to search 
+			;return:None
+		"""
 		for i in range(self.listView.count()):
 			if text.lower() in self.listView.item(i).text().lower():
 				self.listView.item(i).setHidden( False)
 			else:
 				self.listView.item(i).setHidden(True)
 	def searchAttr(self,text):
+		"""
+			Search the attribute list widget 
+			;param text: text entered in the line edit to search 
+			;return:None
+		"""
 		for i in range(self.attrList.count()):
 			if text.lower() in self.attrList.item(i).text().lower():
 				self.attrList.item(i).setHidden( False)
@@ -562,6 +660,10 @@ class beautyUI(QtWidgets.QDialog,stacked.Ui_Form):
 				self.attrList.item(i).setHidden(True)
 
 	def attr_List(self, *args):
+		"""
+			updates the attribute list widgets with the attributes of the selected item in the outliner 
+			;return:None
+		"""
 		attrs = set()
 		for i in self.listView.selectedItems():
 			relObj = cmds.listRelatives(i.text(),ad=True)
@@ -598,6 +700,7 @@ class collectionUI(QtWidgets.QDialog,stackedCollection.Ui_Form):
 		allSgs = ['aiStandardSurface','lambert','surfaceShader','Phong','Blinn','aiShadowMatte']
 		for a in allSgs:
 			self.shaderListCollection.addItem(a)
+		#gets the value from the dictionary and if its true it sets the  input items to be edited 
 		if initvalues[0]:
 			r1 = rs.getRenderLayer(initvalues[1])
 			c1 = r1.getCollections()
@@ -627,10 +730,20 @@ class collectionUI(QtWidgets.QDialog,stackedCollection.Ui_Form):
 
 		
 	def lenAttr(self,*args):
+		"""
+			;return: length of the attibute list widget
+		"""
 		return len(self.attrListCollection.selectedItems())
 	def shaderSelected(self,*args):
+		"""
+			;return: length of the attibute list widget
+		"""
 		return self.shaderListCollection.selectedItems()
 	def next(self, *args):
+		"""
+			Error checks the inputs entered by the user and stores them to a list to accessed later 
+			;Return None
+		"""
 		if self.count == 0:
 			if self.collectionNameLine.text() == "":
 				QtWidgets.QMessageBox.warning(self,"Error","Please Enter a Layer Name")
@@ -674,9 +787,16 @@ class collectionUI(QtWidgets.QDialog,stackedCollection.Ui_Form):
 					self.createLayerCollection(self)
 
 	def createLayerCollection(self,*args):
+		"""
+			;return: the list to used by the function to create the collections
+		"""
 		return self.formC
 		
 	def back (self, *args):
+		"""
+			Connects the back buttons of the widget 
+			;Returns:None
+		"""
 		if self.count == 1:
 			self.count = self.count - 1
 			self.stackedWidget.setCurrentIndex(self.count)
@@ -694,6 +814,11 @@ class collectionUI(QtWidgets.QDialog,stackedCollection.Ui_Form):
 			self.stackedWidget.setCurrentIndex(self.count)
 
 	def searchShader(self,text):
+		"""
+			Search the shader list widget 
+			;param text: text entered in the line edit to search 
+			;return:None
+		"""
 		for i in range(self.shaderListCollection.count()):
 			if text.lower() in self.shaderListCollection.item(i).text().lower():
 				self.shaderListCollection.item(i).setHidden( False)
@@ -701,18 +826,32 @@ class collectionUI(QtWidgets.QDialog,stackedCollection.Ui_Form):
 				self.shaderListCollection.item(i).setHidden(True)
 
 	def Search(self,text):
+		"""
+			Search the objects list widget 
+			;param text: text entered in the line edit to search 
+			;return:None
+		"""
 		for i in range(self.listWidget.count()):
 			if text.lower() in self.listWidget.item(i).text().lower():
 				self.listWidget.item(i).setHidden( False)
 			else:
 				self.listWidget.item(i).setHidden(True)
 	def searchAttr(self,text):
+		"""
+			Search the attribute list widget 
+			;param text: text entered in the line edit to search 
+			;return:None
+		"""
 		for i in range(self.attrListCollection.count()):
 			if text.lower() in self.attrListCollection.item(i).text().lower():
 				self.attrListCollection.item(i).setHidden( False)
 			else:
 				self.attrListCollection.item(i).setHidden(True)
 	def attr_List(self, *args):
+		"""
+			updates the attribute list widgets with the attributes of the selected item in the outliner 
+			;return:None
+		"""
 		attrs = set()
 		for i in self.listWidget.selectedItems():
 			relObj = cmds.listRelatives(i.text(),ad=1)
@@ -743,6 +882,10 @@ class collectionUI(QtWidgets.QDialog,stackedCollection.Ui_Form):
 									item.setSelected(True)
 
 def showUI():
+	"""
+		to the show the UI when the program is run
+		;Return the class object to keep the widget running
+	"""
 	ui = mainUI()
 	ui.show()
 	return ui
