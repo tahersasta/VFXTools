@@ -9,6 +9,9 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_Form(object):
     def setupUi(self, Form):
+          """
+            Sets all the items that are going to be added to the widget
+        """
         Form.setObjectName("Form")
         Form.resize(559, 348)
         self.stackedWidget = QtWidgets.QStackedWidget(Form)
