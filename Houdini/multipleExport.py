@@ -1,5 +1,13 @@
-
+#############################################################################################################################
+#
+#Export Multiple Geo as fbx 
+#
+############################################################################################################################
 def exportAll():
+    """
+        Exports selected geo to an fbx in the Path provided 
+        ;return:None
+     """
     PATH = "C:/Users/TAHER/Desktop/Houdini/"
     obj = hou.node("/obj")
     children = obj.children()
