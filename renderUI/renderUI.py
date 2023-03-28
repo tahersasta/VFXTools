@@ -386,7 +386,7 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 			;Returns:None
 		"""
 		projDict = {
-		"Stranger Things" : {"width" : 1080,"height":1920},
+		"Stranger Things" : {"width" : 1920,"height":1080},
 		"Black Panther" : {"width" : 1080,"height":2048},
 		"Wednesday" : {"width" : 900,"height":1440},
 		"Superman" : {"width":3840 , "height":2160},
@@ -403,7 +403,10 @@ class mainUI(QtWidgets.QDialog,main.Ui_Form):
 			cmds.setAttr('perspShape.renderable', False)
 			cmds.setAttr('sideShape.renderable', False)
 			cmds.setAttr('topShape.renderable', False)
-			cmds.setAttr('shotCamShape.renderable', True)
+			try:
+				cmds.setAttr('shotCamShape.renderable', True)
+			except:
+				QtWidgets.QMessageBox.warning(self,"Error","Please set the camera as there is no shotCam")
 			if check == "Low":
 				cmds.setAttr("defaultArnoldRenderOptions.AASamples",4)
 				cmds.setAttr("defaultArnoldRenderOptions.GIDiffuseSamples",1)
