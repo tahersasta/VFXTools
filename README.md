@@ -1,7 +1,7 @@
 ### Code Repository for Maya, Nuke, and Houdini
 
 
-Welcome to my Git Hub repository! This repository contains code for various projects created in Maya, Nuke, and Houdini. The code is available for viewing by recruiters and potential employers.
+Welcome to my Git Hub repository! This repository contains code for various projects created in Maya, Nuke, and Houdini. The code is available for viewing by recruiters and potential employers. Each Folder and functions have their own Readmes further describing their functionalities and what each file does in the following script 
 
 ### Getting Started
 To view the code, simply browse the repository folders and files. 
