@@ -28,6 +28,8 @@ Here is a list of the projects currently included in the repository:
   </ul>
   <li><h4>Nuke</h4></li>
    <ul>
+    <li><b>Plugins for Nuke using NDK and C++</b></li>
+    <ul>Plugins created in Nuke using C++ </ul>
       <li><b>Tool Engine</b></li>
         <ul>Creates a plugin in Nuke to quickly add toolsets across various platforms and over the network</ul>
       <li><b>Channel Seperator</b></li>
